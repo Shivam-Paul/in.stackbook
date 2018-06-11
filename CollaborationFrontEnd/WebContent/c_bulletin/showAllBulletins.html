@@ -1,0 +1,16 @@
+<div class="container" ng-Controller="BulletinController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Bulletins</font>
+		</center>
+	</h1>
+	<ol>
+	<div ng-repeat="bulletin in allBulletinData">
+	
+	<li><b>
+	<a href="" ng-click="$event.preventDefault();viewBulletin(bulletin.bulletin_id)">
+	{{bulletin.title}}</a>
+	</b></li>
+</div>
+</ol>
+</div>

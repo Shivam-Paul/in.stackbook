@@ -1,0 +1,57 @@
+<div class="container" ng-controller="BlogController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">{{blogData.title}}</font>
+		</center>
+	</h1>
+	<div align="right">{{blogData.views}} Views</div>
+	<br> <br>
+
+
+	<div align="right">
+		Author: {{blogData.email_id}} <br> on {{blogData.date_created |
+		date:"d-MMM-yy 'at' HH:mm:ss"}}
+	</div>
+	<br> <br>
+	<div align="center">{{blogData.content}}</div>
+	<br> <br>
+	<div ng-controller="BlogController">
+		<h1>Comments</h1>
+		<br> <br>
+		<div ng-repeat="comment in blogCommentData">
+			<img src="" height="30" width="30"> <a href=""
+				ng-click="$event.preventDefault();viewUser(comment.email_id)">
+				{{comment.email_id}} </a> &nbsp; &nbsp; on {{comment.comment_date |
+			date:"d-MMM-yy 'at' HH:mm:ss"}}
+			<div align="center">
+				{{comment.blog_comment}}
+				<div align="right" ng-show="currentUser.email_id==comment.email_id">
+					<a href="" ng-click=$event.preventDefault();editComment(comment.b_comment_id,comment.blog_id)>
+						<span class="glyphicon glyphicon-pencil"></span>
+					</a> &nbsp;
+					<a href="" ng-click=$event.preventDefault();deleteComment(comment.b_comment_id,comment.blog_id)>
+						<span class="glyphicon glyphicon-trash"></span>
+					</a>
+				</div>
+			</div>
+			<div>
+				<!-- ng-controller="LikeController" -->
+				<a href="" ng-click=""> (like count) Likes </a> /
+				<a href="" ng-click=""> (dislike count) Dislikes</a>
+			</div>
+		</div>
+		<form>
+			<h3>Add Comment</h3>
+			<br>
+			<div>
+				<label> Comment: </label>
+				<textarea ng-model="blogComment.blog_comment" cols="60" rows="10"></textarea>
+			</div>
+			<div>
+				<input type="button" ng-click="addComment(blogData.blog_id)"
+					class="btn btn-lg btn-info" name="addBlog" value="Add Comment">
+
+			</div>
+		</form>
+	</div>
+</div>

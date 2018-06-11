@@ -1,0 +1,64 @@
+<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-cookies.js"></script>
+
+	<script src="RouteConfig.js"></script>
+	<script src="c_user/UserController.js"></script>
+	<script src="c_blog/BlogController.js"></script>
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	</head>
+	
+	<body ng-app="myApp">
+
+	<div class="container">
+		<nav class="navbar navbar-inverse">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="#/"> Stackbook </a>
+				</div>
+			<ul class="nav navbar-nav">
+				<li><a href="#/home">Home</a></li>
+				<li><a href="#/login">Login</a></li>
+				<li><a href="#/register">Register</a></li>
+				
+				<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="">Blog
+				<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li ng-hide="currentUser==undefined"><a href="#/addBlog">Add Blog</a></li>
+					<li><a href="#/showAllBlogs">View Blogs</a></li>
+					<li ng-hide="currentUser==undefined"><a href="#/myBlog">My Blog</a></li>
+					<li ng-show="currentUser!=undefined && currentUser.role=='A'"><a href="#/home">Test</a>
+				</ul>
+				</li>
+				
+				<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="">Bulletin
+				<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li ng-show="currentUser!=undefined && currentUser.role=='A'"><a href="#/addBlog">Add Bulletin</a></li>
+					<li><a href="#/showAllBulletins">View Bulletins</a></li>
+				</ul>
+				</li>
+								
+			</ul>
+			<div class="nav navbar-nav navbar-right" ng-hide="currentUser==undefined">
+			<font color="white" face="calibri" size='2'> Welcome: {{currentUser.name}}</font>
+			<form ng-controller="UserController">
+			<input type="submit" value="logout" class="btn btn-info" ng-submit="logout()"/>
+			</form>
+			</div>
+			</div>
+		</nav>
+		<div ng-view>
+		</div>
+
+	</div>
+	</body>
+	</html>

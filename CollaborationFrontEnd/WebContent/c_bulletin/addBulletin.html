@@ -1,0 +1,30 @@
+<div class="container" ng-Controller="BulletinController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Add Bulletin</font>
+		</center>
+	</h1>
+	<div class="col-lg-12-well">
+		<div class="row">
+			<form>
+				<div class="col-sm-12">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<label> Bulletin Title </label> <input type="text" name="title"
+								ng-model="bulletin.title" class="form-control"/>
+						</div>
+						<div class="col-sm-6 form-group">
+							<label> Bulletin Content </label>
+							 <textarea name="content" ng-model="bulletin.description" cols="60" rows="10"></textarea>
+						</div>
+
+					</div>
+					<div>
+						<input type="button" ng-click="addBulletin()"
+							class="btn btn-lg btn-info" name="addBulletin" value="Create Bulletin">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

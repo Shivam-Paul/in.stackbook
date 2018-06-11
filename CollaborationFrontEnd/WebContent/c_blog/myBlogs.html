@@ -1,0 +1,28 @@
+<div class="container" ng-Controller="BlogController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">My Blogs</font>
+		</center>
+	</h1>
+
+	<div id="myblog" ng-repeat="blog in allBlogData">
+		<div ng-show="currentUser.email_id==blog.email_id">
+			<button type="button" class="btn btn-info" data-toggle="collapse"
+				data-target="#{{blog.blog_id}}">{{blog.title}}
+			</button>
+			<div id="demo" class="collapse">
+				{{blog.content}}
+				<button type="button" class="btn btn-info" data-toggle="collapse"
+					data-target="#{{blog.blog_id}}">{{blog.title}}
+				</button>
+				<button type="button" class="btn btn-danger"
+					ng-click="deleteBlog(blog.blog_id)">Delete
+				</button>
+				<label ng-show="blog.status=='A'">Approved</label>
+				<label ng-show="blog.status=='N'">Not Approved</label>
+				<div id="demo" class="collapse">{{blog.content}}</div>
+			</div>
+		</div>
+
+	</div>
+</div>

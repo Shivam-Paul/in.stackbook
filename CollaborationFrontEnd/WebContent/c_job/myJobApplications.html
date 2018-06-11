@@ -1,0 +1,25 @@
+<div class="container" ng-Controller="JobController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Jobs</font>
+		</center>
+	</h1>
+	
+	<div ng-repeat="application in myJobApplicationData">
+	<ol>
+	<li>
+	<a href="" ng-click="$event.preventDefault();viewJob(application.job_id)">
+	{{application.job_id}}
+	</a>
+	&nbsp; on {{application.date_applied}}
+	&nbsp; status: &nbsp;
+	<div ng-show="application.status=='A'">Applied</div>
+	<div ng-show="application.status=='S'">Selected</div>
+	<div ng-show="application.status=='R'">Rejected</div>
+	<a href="" ng-click="$event.preventDefault();deleteJobApplication(application.job_application_id)">
+	<span class="glyphicon glyphicon-trash"></span>
+	</a>
+	</li>
+	</ol>
+	</div>
+</div>

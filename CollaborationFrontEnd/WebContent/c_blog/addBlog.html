@@ -1,0 +1,30 @@
+<div class="container" ng-Controller="BlogController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Add Blog</font>
+		</center>
+	</h1>
+	<div class="col-lg-12-well">
+		<div class="row">
+			<form>
+				<div class="col-sm-12">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<label> Blog Title </label> <input type="text" name="title"
+								ng-model="blog.title" class="form-control"/>
+						</div>
+						<div class="col-sm-6 form-group">
+							<label> Blog Content </label>
+							 <textarea name="content" ng-model="blog.content" cols="60" rows="10"></textarea>
+						</div>
+
+					</div>
+					<div>
+						<input type="button" ng-click="addBlog()"
+							class="btn btn-lg btn-info" name="addBlog" value="Create Blog">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
