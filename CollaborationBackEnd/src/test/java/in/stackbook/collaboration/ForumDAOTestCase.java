@@ -73,6 +73,14 @@ public class ForumDAOTestCase {
 	}
 	
 	@Test
+	public void testcase() {
+		
+		Forum forum = new Forum();
+		Assert.assertEquals("Test case", 0, forum.getComment_access());
+		
+	}
+	
+	@Test
 	public void getAllForumsAtLevelTestCase() {
 		
 		int actual = forumDAO.listByLevel(0).size();

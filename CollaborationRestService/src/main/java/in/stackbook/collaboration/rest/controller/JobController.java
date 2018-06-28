@@ -1,7 +1,6 @@
 package in.stackbook.collaboration.rest.controller;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -37,10 +36,10 @@ public class JobController {
 	
 	@Autowired UserDAO userDAO;
 	
-	@Autowired HttpSession httpSession;
+	@Autowired HttpSession session;
 
 	
-	@GetMapping("/listalljobs")		
+	@GetMapping("/listAllJobs")		
 	public ResponseEntity<List<Job>> listAllJobs() {
 		
 		List<Job> jobs = jobDAO.list();
@@ -99,12 +98,12 @@ public class JobController {
 		
 	}
 	
-	@GetMapping("/update/{job_id}/{status}")
-	public ResponseEntity<Job> updateJob(@PathVariable int job_id, @PathVariable char status) {
+	@GetMapping("/updateStatus/{job_id}/{status}")
+	public ResponseEntity<Job> updateJobStatus(@PathVariable int job_id, @PathVariable char status) {
 		
 		job = jobDAO.getJob(job_id);
 		
-		if(job==null) {
+		if(job == null) {
 			job = new Job();
 			job.setMessage("No job exists with this job: "+job_id);
 			return new ResponseEntity<Job>(job, HttpStatus.NOT_FOUND);
@@ -134,29 +133,52 @@ public class JobController {
 	@GetMapping("/listByStatus/{status}")
 	public ResponseEntity<List<Job>> getJobsByStatus(@PathVariable char status) {
 		
-		List<Integer> job_id = jobDAO.listByStatus(status);
-		List<String> job_title = new ArrayList<String>();
+		List<Job> jobs = jobDAO.listByStatus(status);
 		
-		for(int temp : job_id) {
-			
-			job_title.add(jobDAO.getJobTitle(temp));
-			
-		}
-		List<Job> jobs = new ArrayList<Job>();
-		if(job_id.isEmpty()) {
+		if(jobs.isEmpty()) {
 			job = new Job();
 			job.setMessage("No jobs are available");
 			jobs.add(job);
-			return new ResponseEntity<List<Job>>(jobs, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<Job>>(jobs, HttpStatus.NO_CONTENT);
 		}
-		Iterator<Integer> id = job_id.iterator();
+		/*Iterator<Integer> id = job_id.iterator();
 		Iterator<String> title = job_title.iterator();
 		while(id.hasNext() && title.hasNext()) {
 			Job tempJob = new Job();
 			tempJob.setJob_id((Integer)id.next());
 			tempJob.setTitle((String)title.next());
 			jobs.add(tempJob);
+		}*/
+		return new ResponseEntity<List<Job>>(jobs, HttpStatus.OK);
+	}
+	
+	@GetMapping("/listByCompanyName/{company_name}")
+	public ResponseEntity<List<Job>> getJobsByCompanyName(@PathVariable String company_name) {
+		
+		List<Job> jobs = jobDAO.listByCompanyName(company_name);
+		
+		if(jobs.isEmpty()) {
+			job = new Job();
+			job.setMessage("No jobs are available");
+			jobs.add(job);
+			return new ResponseEntity<List<Job>>(jobs, HttpStatus.NO_CONTENT);
 		}
+	
+		return new ResponseEntity<List<Job>>(jobs, HttpStatus.OK);
+	}
+	
+	@GetMapping("/listAboveSalary/{salary}")
+	public ResponseEntity<List<Job>> getJobsAboveSalary(@PathVariable int salary) {
+		
+		List<Job> jobs = jobDAO.listAboveSalary(salary);
+		
+		if(jobs.isEmpty()) {
+			job = new Job();
+			job.setMessage("No jobs are available");
+			jobs.add(job);
+			return new ResponseEntity<List<Job>>(jobs, HttpStatus.NO_CONTENT);
+		}
+
 		return new ResponseEntity<List<Job>>(jobs, HttpStatus.OK);
 	}
 	
@@ -165,77 +187,102 @@ public class JobController {
 		
 		job = jobDAO.getJob(job_id);
 		
-		if(job!=null) {
+		if(job != null) {
 			return new ResponseEntity<Job>(job, HttpStatus.OK);
 		}
 		return new ResponseEntity<Job>(job, HttpStatus.NOT_FOUND);
 	}
 	
+	
 	//Job Application #############################################
 	
-	@GetMapping("/apply/{job_id}/{email_id}")
-	public ResponseEntity<JobApplication> applyForAJob(@PathVariable int job_id, @PathVariable String email_id) {
-		
+	
+	@GetMapping("/application/save/{job_id}")
+	public ResponseEntity<JobApplication> applyForAJob(@PathVariable int job_id) {
+				
 		job = jobDAO.getJob(job_id);
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		String email_id = user.getEmail_id();
+		
+		jobApplication = new JobApplication();
 										
-		if(job==null) {
-			jobApplication.setMessage("Job does not exist, cannot apply");
+		if(job != null) {
+			if(user != null) {
+				if(jobDAO.getJobApplication(job_id, email_id) == null) {
+					if(job.getStatus() == 'O') {
+						jobApplication.setEmail_id(email_id);
+						jobApplication.setJob_id(job_id);
+						if(jobDAO.save(jobApplication)) {
+							jobApplication.setMessage("You have successfully applied for the job");
+							return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);
+						}
+						jobApplication.setMessage("Could not apply for the job .. please try after some time");
+						return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+					jobApplication.setMessage("Job is now closed, cannot apply");
+					return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.FORBIDDEN);
+				}
+				jobApplication.setMessage("User already applied, cannot apply again");
+				return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
+			}
+			jobApplication.setMessage("User does not exist");
 			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		}
-		if(jobDAO.getJobApplication(job_id, email_id)!=null) {
-			jobApplication.setMessage("User already applied, cannot apply again");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
-		}
-		if(job.getStatus()!='O') {
-			jobApplication.setMessage("Job is now closed, cannot apply");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.FORBIDDEN);
-		}
-		
-		if(jobDAO.save(jobApplication)) {
-			jobApplication.setMessage("You have successfully applied for the job");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);
-		}
-		jobApplication.setMessage("Could not apply for the job .. please try after some time");
-		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.INTERNAL_SERVER_ERROR);
+		jobApplication.setMessage("Job does not exist, cannot apply");
+		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);	
 		
 	}
 	
-	@GetMapping("/application/update/{job_id},{email_id},{status}")
-	public ResponseEntity<JobApplication> update(@PathVariable int job_id,
+	@GetMapping("/application/update/{job_id}/{email_id}/{status}")
+	public ResponseEntity<JobApplication> updateApplication(@PathVariable int job_id,
 			@PathVariable String email_id, @PathVariable char status) {
 		
-		
 		job = jobDAO.getJob(job_id);
-		if(job==null) {
-			jobApplication.setMessage("Job does not exist, cannot apply");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
-		}
-		
 		user = userDAO.get(email_id);
-		if(job==null) {
-			jobApplication.setMessage("User does not exist, cannot apply");
+		jobApplication = jobDAO.getJobApplication(job_id, email_id);
+
+		if(job != null) {
+			if(user != null) {
+				if(jobApplication != null) {
+					if(jobApplication.getStatus() != status) {
+						jobApplication.setStatus(status);
+						if(jobDAO.update(jobApplication)) {
+							jobApplication.setMessage("Job Application status updated successfully");
+							return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);
+						}
+						jobApplication.setMessage("Could not update the status");
+						return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.INTERNAL_SERVER_ERROR);
+					}
+					jobApplication.setMessage("Status entered is the existing one, enter different status to update");
+					return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
+				}
+				jobApplication.setMessage("Job Application does not exist");
+				return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
+			}
+			jobApplication.setMessage("User does not exist");
 			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		}
+		jobApplication.setMessage("Job does not exist");
+		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		
-		if(jobDAO.getJobApplication(job_id, email_id)!=null) {
-			jobApplication.setMessage("User already applied, cannot apply again");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
+	}
+	
+	@GetMapping("/application/delete/{job_application_id}")
+	public ResponseEntity<JobApplication> deleteApplication(@PathVariable int job_application_id) {
+		
+		jobApplication = jobDAO.getJobApplication(job_application_id);
+		if(jobApplication != null) {
+			if(jobDAO.deleteJobApplication(job_application_id)) {
+				jobApplication.setMessage("Job Application delete successfully");
+				return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);
+			}
+			jobApplication.setMessage("Could not delete the job application .. please try after some time");
+			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		
-		jobApplication = jobDAO.getJobApplication(job_id, email_id);
-		
-		if(jobApplication.getStatus()==status) {
-			jobApplication.setMessage("Status entered is the existing one, enter different status to update");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.CONFLICT);
-		}
-		
-		jobApplication.setStatus(status);
-		if(jobDAO.update(jobApplication)) {
-			jobApplication.setMessage("Job Application status updated successfully");
-			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);
-		}
-		jobApplication.setMessage("Could not update the status");
-		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.INTERNAL_SERVER_ERROR);
+		jobApplication.setMessage("Job application does not exist");
+		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		
 	}
 	
@@ -244,59 +291,67 @@ public class JobController {
 		
 		job = jobDAO.getJob(job_id);
 		
-		List<JobApplication> jobApplications = jobDAO.listAllForJobID(job_id);
+		List<JobApplication> applications = new ArrayList<JobApplication>();
 		
 		if(job==null) {
 			jobApplication = new JobApplication();
 			jobApplication.setMessage("Job does not exist, cannot apply");
-			jobApplications.add(jobApplication);
-			return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.NOT_FOUND);
+			applications.add(jobApplication);
+			return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.NOT_FOUND);
 		}
 		
-		if(jobApplications.isEmpty()) {
+		applications = jobDAO.listAllForJobID(job_id);
+		
+		if(applications.isEmpty()) {
 			jobApplication = new JobApplication();
 			jobApplication.setMessage("No one applied for this job");
-			jobApplications.add(jobApplication);
-			return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.NO_CONTENT);
+			applications.add(jobApplication);
+			return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.NO_CONTENT);
 		}
 		
-		return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.OK);
+		return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.OK);
 	}
 	
-	@GetMapping("/application/myList/{email_id}")
-	public ResponseEntity<List<JobApplication>> myApplications(@PathVariable String email_id) {
+	@GetMapping("/application/myList")
+	public ResponseEntity<List<JobApplication>> myApplications() {
 		
-		List<JobApplication> jobApplications = jobDAO.listAllForEmailID(email_id);
+		user = (User)session.getAttribute("loggedInUser");
 		
-		if(userDAO.get(email_id)==null) {
+		List<JobApplication> applications = new ArrayList<JobApplication>();
+		
+		if(userDAO.get(user.getEmail_id()) == null) {
 			jobApplication = new JobApplication();
 			jobApplication.setMessage("User does not exist");
-			jobApplications.add(jobApplication);
-			return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.NOT_FOUND);
+			applications.add(jobApplication);
+			return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.NOT_FOUND);
 		}
 		
-		if(jobApplications.isEmpty()) {
+		applications = jobDAO.listAllForEmailID(user.getEmail_id());
+		
+		if(applications.isEmpty()) {
 			jobApplication = new JobApplication();
 			jobApplication.setMessage("You have not applied for any job");
-			jobApplications.add(jobApplication);
-			return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.NO_CONTENT);
+			applications.add(jobApplication);
+			return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<List<JobApplication>>(jobApplications, HttpStatus.OK);
+		return new ResponseEntity<List<JobApplication>>(applications, HttpStatus.OK);
 	}
 	
-	@GetMapping("/application/check/{job_id}/{email_id}")
-	public ResponseEntity<JobApplication> checkJobApplication(@PathVariable int job_id, @PathVariable String email_id) {
+	@GetMapping("/application/check/{job_id}")
+	public ResponseEntity<JobApplication> checkJobApplication(@PathVariable int job_id) {
+		
+		user = (User)session.getAttribute("loggedInUser");
 		
 		job = jobDAO.getJob(job_id);
-		if(job==null) {
+		if(job == null) {
 			jobApplication = new JobApplication();
 			jobApplication.setMessage("Job does not exist");
 			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		}
-		jobApplication = jobDAO.getJobApplication(job_id, email_id);
-		if(jobApplication!=null) {
+		jobApplication = jobDAO.getJobApplication(job_id, user.getEmail_id());
+		if(jobApplication != null) {
 			jobApplication = new JobApplication();
-			jobApplication.setMessage("Job does not exist");
+			jobApplication.setMessage("Job Application does not exist");
 			return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<JobApplication>(jobApplication, HttpStatus.OK);

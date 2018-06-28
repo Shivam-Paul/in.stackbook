@@ -15,7 +15,7 @@ public interface BlogDAO {
 	
 	public Blog get(int blog_id);
 	
-	public String getBlogTitle(int blog_id);
+	//public String getBlogTitle(int blog_id);
 	
 	public List<Blog> list();
 	
@@ -40,10 +40,10 @@ public interface BlogDAO {
 			
 	public List<BlogComment> list(int blog_id);
 	
-	public List<BlogComment> listAllCommentsFrom(String email_id);
-	
 	public List<BlogComment> list(int blog_id, String email_id);
 	
+	public List<BlogComment> listAllCommentsFrom(String email_id);
+		
 	//public List<BlogComment> listTheFirstXCommentsOn(int blog_id);
 	
 

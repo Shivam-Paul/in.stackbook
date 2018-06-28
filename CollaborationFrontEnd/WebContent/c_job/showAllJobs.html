@@ -7,15 +7,15 @@
 	<ol>
 	<div ng-repeat="job in allJobData">
 	
-	<li>
-	<a href="" ng-click="$event.preventDefault();viewJob(job.job_id)">
-	{{job.title}}
-	</a>
-	&nbsp; {{job.salary}} per month
-	 &nbsp; {{job.company_name}}
-	 &nbsp; {{job.openings}} left
-	&nbsp; &nbsp; Apply Before: {{job.apply_before}}
-	</li>
-</div>
-</ol>
+		<li>
+		<a href="" ng-click="$event.preventDefault();viewJob(job.job_id)">
+			{{job.title}}
+		</a>
+		&nbsp; {{job.salary}} per month
+		&nbsp; {{job.company_name}}
+		&nbsp; {{job.openings}} left
+		&nbsp; &nbsp; Apply Before: {{job.apply_before | date:"d-MMM-yy"}}
+		</li>
+	</div>
+	</ol>
 </div>

@@ -1,28 +1,24 @@
-<div class="container" ng-Controller="BlogController">
-	<h1 class="well">
+<div class = "container" ng-Controller = "BlogController">
+	<h1 class = "well">
 		<center>
-			<font face="Monotype Corsiva">My Blogs</font>
+			<font face = "Monotype Corsiva">My Blogs</font>
 		</center>
 	</h1>
 
-	<div id="myblog" ng-repeat="blog in allBlogData">
-		<div ng-show="currentUser.email_id==blog.email_id">
-			<button type="button" class="btn btn-info" data-toggle="collapse"
-				data-target="#{{blog.blog_id}}">{{blog.title}}
+	<div id = "myblog" ng-repeat = "myBlog in allBlogData">
+		<div ng-show = "currentUser.email_id == myBlog.email_id">
+			<input type = "button" ng-click = "viewBlog(myBlog.blog_id)"
+				class = "btn btn-lg btn-info" name = "viewBlog" value = "{{myBlog.title}}">
+			&nbsp;
+			<a href = "" ng-click = "editBlog(myBlog.blog_id)">
+				Edit
+			</a> &nbsp;
+			<button type = "button" class = "btn btn-danger" ng-click = "deleteBlog(myBlog.blog_id)">
+				Delete
 			</button>
-			<div id="demo" class="collapse">
-				{{blog.content}}
-				<button type="button" class="btn btn-info" data-toggle="collapse"
-					data-target="#{{blog.blog_id}}">{{blog.title}}
-				</button>
-				<button type="button" class="btn btn-danger"
-					ng-click="deleteBlog(blog.blog_id)">Delete
-				</button>
-				<label ng-show="blog.status=='A'">Approved</label>
-				<label ng-show="blog.status=='N'">Not Approved</label>
-				<div id="demo" class="collapse">{{blog.content}}</div>
-			</div>
+			<label ng-show = "myBlog.status == 'A'"> Approved </label>
+			<label ng-show = "myBlog.status == 'N'"> Not Approved </label>
+			<label ng-show = "myBlog.status == 'P'"> Pending </label>
 		</div>
-
 	</div>
 </div>

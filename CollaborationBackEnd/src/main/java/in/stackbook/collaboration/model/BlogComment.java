@@ -28,10 +28,6 @@ public class BlogComment extends BaseDomain {
 	
 	private String email_id;
 	
-	private int score;
-	
-	
-	
 
 	public int getB_comment_id() {
 		return b_comment_id;
@@ -73,14 +69,5 @@ public class BlogComment extends BaseDomain {
 		this.email_id = email_id;
 	}
 
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
-	}
-	
-	
 
 }

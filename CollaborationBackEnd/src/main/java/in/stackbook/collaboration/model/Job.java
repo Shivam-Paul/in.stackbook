@@ -34,7 +34,7 @@ public class Job extends BaseDomain {
 	
 	private Timestamp apply_before;
 	
-	private char status;  //O(Open)/C(Closed)/P(Pending)
+	private char status;  //O(Open)/C(Closed)
 	
 	private int openings;
 

@@ -24,34 +24,46 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 			status : ''
 	};
 	
-	$scope.jobApplicationData;
+	$rootScope.jobApplicationData;
+	
 	$scope.allJobApplicationData;
 	$scope.myJobApplicationData;
 	
+	var date = new Date();
+	var dd = date.getDate();
+	var mm = date.getMonth()+1;
+	var yyyy = date.getFullYear();
+	var yyyy2 = date.getFullYear()+1;
+	
+	$scope.today = dd + '-' + mm + '-' + yyyy;
+	$scope.applyBefore = dd + '-' + mm + '-' + yyyy2;
+	
+	$scope.today2 = dd + '/' + mm + '/' + yyyy;
+	$scope.applyBefore2 = dd + '/' + mm + '/' + yyyy2;
+	
+	/*console.log($scope.today);
+	console.log($scope.applyBefore);*/
+	
 	$scope.addJob = function() {
-		
-		alert('Add Job');
-		
+				
 		console.log('Adding Job');
 				
-		$http.post('http://localhost:8081/CollaborationRestService/job/save',$scope.job)
+		$http.post('http://localhost:8081/CollaborationRestService/job/save', $scope.job)
 		.then(function(response) {
 			
-			$scope.viewJob($scope.job.job_id);
+			$location.path('showAllJobs');
+			
 		});
-		
 	}
 	
 	$scope.viewJob = function(job_id) {
 		
-		alert('View Job');
+		console.log('View Job');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/get/'+job_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/get/' + job_id)
 		.then(function(response) {
 			
-			viewJobApplication(job_id, $scope.currentUser.email_id);
-						
-			console.log(response.data);
+			$scope.viewJobApplication(job_id, $scope.currentUser.email_id);
 			
 			$rootScope.jobData = response.data;
 			$location.path('viewJob');
@@ -61,9 +73,9 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	$scope.getJob = function(job_id) {
 		
-		alert('Get Job');
+		console.log('Get Job');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/get/'+job_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/get/' + job_id)
 		.then(function(response) {
 			
 			$scope.jobData = response.data; 
@@ -74,9 +86,9 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	$scope.updateJob = function(job_id) {
 		
-		alert('Update Job');
+		console.log('Update Job');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/update'+job_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/update' + job_id)
 		.then(function(response) {
 			
 			console.log('Update Job');
@@ -87,7 +99,7 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	function showAllJobs() {
 		console.log('List All Jobs');
-		$http.get('http://localhost:8081/CollaborationRestService/job/list')
+		$http.get('http://localhost:8081/CollaborationRestService/job/listAllJobs')
 		.then(function(response) {
 			$scope.allJobData=response.data;
 		});
@@ -95,9 +107,9 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	$scope.deleteJob = function(job_id) {
 		
-		alert('Delete Job');
+		console.log('Delete Job');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/delete/'+job_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/delete/' + job_id)
 		.then(function(response) {
 			console.log(reponse.data);
 		});
@@ -111,43 +123,41 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	
 	$scope.addJobApplication = function(job_id) {
-		
-		alert('Add Job Application');
-		
+				
 		console.log('Adding Job Application');
 				
-		$http.post('http://localhost:8081/CollaborationRestService/job/application/save',$scope.jobApplication)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/save/' + job_id)
 		.then(function(response) {
-			$scope.viewJob($scope.jobApplication.job_id);
+			$location.path('showAllJobs');
 		});
 	}
 	
 	$scope.viewJobApplication = function(job_id, email_id) {
 		
-		alert('View Job Application');
+		console.log('View Job Application');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/application/check/'+job_id+'/'+email_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/check/' + job_id)
 		.then(function(response) {
 			$rootScope.jobApplicationData = response.data;
 			console.log(response.data);
 		});
 	}
 	
-	function showAllJobApplications(job_id) {
+	$scope.showAllJobApplications = function(job_id) {
 		
-		alert('List of Job Applications');
+		console.log('List of Job Applications');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/application/list/'+job_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/list/' + job_id)
 		.then(function(response) {
 			$scope.allJobApplicationData = response.data;
 		});
 	}
 	
-	function myJobApplications(email_id) {
+	function myJobApplications() {
 		
-		alert('My Job Applications');
+		console.log('My Job Applications');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/application/myList'+email_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/myList')
 		.then(function(response) {
 			$scope.myJobApplicationData = response.data;
 		});
@@ -156,30 +166,26 @@ myApp.controller("JobController", function($scope, $http, $rootScope, $location)
 	
 	$scope.updateJobApplication = function(job_application_id, job_id) {
 		
-		alert('Update Job Application');
+		console.log('Update Job Application');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/application/update'+job_application_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/update' + job_application_id)
 		.then(function(response) {
-			
-			console.log('Update Job Application');
-			
+						
 			$scope.viewJob(job_id);
 		});
 	}
 	
 	$scope.deleteJobApplication = function(job_application_id) {
 		
-		alert('Delete Job Application');
+		console.log('Delete Job Application');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/job/application/delete/'+job_application_id)
+		$http.get('http://localhost:8081/CollaborationRestService/job/application/delete/' + job_application_id)
 		.then(function(response) {
 			console.log(reponse.data);
 		});
 		
 	}
 	
-	myJobApplications(currentUser.email_id);
-	
-	
+	myJobApplications();	
 	
 });

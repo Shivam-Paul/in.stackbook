@@ -95,7 +95,7 @@ public class JobDAOTestCase {
 	@Test
 	public void listAllJobsAboveSalary() {
 		
-		Assert.assertEquals("List", 1, jobDAO.listAllAboveSalary(5000).size());
+		Assert.assertEquals("List", 1, jobDAO.listAboveSalary(5000).size());
 		
 	}
 	

@@ -1,22 +1,22 @@
 package in.stackbook.collaboration.model;
 
-import java.sql.Timestamp;
+import java.sql.Date;
 
 public class OutputMessage extends Message {
 	
-	private Timestamp time;
-
-	public Timestamp getTime() {
-		return time;
-	}
-
-	public void setTime(Timestamp time) {
-		this.time = time;
-	}
+	private Date date;
 	
-	public OutputMessage(Message original, Timestamp time) {
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public OutputMessage(Message original, Date date) {
 		super(original.getId(), original.getMessage());
-		this.time = time;
+		this.date = date;
 	}
 
 }

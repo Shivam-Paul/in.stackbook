@@ -1,17 +1,15 @@
 <div class="container" ng-controller="BulletinController">
 	<h1 class="well">
 		<center>
-			<font face="Monotype Corsiva">{{bulletinData.title}}</font>
+			<font face="Monotype Corsiva"> {{bulletinData.title}} </font>
 		</center>
 	</h1>
 
 
 	<div align="right">
-		Bulletin Date: {{bulletinData.event_date |
-		date:"d-MMM-yy 'at' HH:mm:ss"}}
+		Bulletin Date: {{bulletinData.event_date | date:"d-MMM-yy 'at' HH:mm:ss"}}
 	</div>
 	<br> <br>
 	<div align="center">{{bulletinData.content}}</div>
 	<br> <br>
-	
 </div>

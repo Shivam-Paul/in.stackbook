@@ -1,4 +1,4 @@
-<!-- <div class="container" ng-Controller="ForumController">
+<div class="container" ng-Controller="ForumController" ng-show="currentUser != undefined">
 	<h1 class="well">
 		<center>
 			<font face="Monotype Corsiva">Add Forum</font>
@@ -10,18 +10,34 @@
 				<div class="col-sm-12">
 					<div class="row">
 						<div class="col-sm-6 form-group">
-							<label> Forum Title </label> <input type="text" name="title"
-								ng-model="Forum.title" class="form-control"/>
-						</div>
-						<div class="col-sm-6 form-group">
-							<label> Forum Title </label> <input type="text" name="title"
-								ng-model="Forum.title" class="form-control"/>
+							<label> Forum Title </label>
+							<input type="text" name="title"	ng-model="forum.title" class="form-control"/>
 						</div>
 						<div class="col-sm-6 form-group">
 							<label> Forum Content </label>
-							 <textarea name="content" ng-model="Forum.content" cols="60" rows="10"></textarea>
+							 <textarea name="content" ng-model="forum.content" cols="60" rows="10"></textarea>
 						</div>
-
+						<div class="col-sm-6 form-group">
+							<label> View Access </label>
+							<select ng-model="forum.view_access">
+							  <option value="1">Anyone</option>
+							  <option ng-show="currentUser.role>=2" value="2">Student or higher</option>
+							  <option ng-show="currentUser.role>=3" value="3">Moderator or higher</option>
+							  <option ng-show="currentUser.role>=4" value="4">Teacher or higher</option>
+							  <option ng-show="currentUser.role==5" value="5">Admins only</option>
+							</select>
+						</div>
+						<div class="col-sm-6 form-group">
+							<label> Comment Access </label>
+							<select ng-model="forum.comment_access">
+							  <option value="1">Anyone</option>
+							  <option ng-show="currentUser.role>=2" value="2">Student or higher</option>
+							  <option ng-show="currentUser.role>=3" value="3">Moderator or higher</option>
+							  <option ng-show="currentUser.role>=4" value="4">Teacher or higher</option>
+							  <option ng-show="currentUser.role==5" value="5">Admins only</option>
+							</select>
+						</div>
+						
 					</div>
 					<div>
 						<input type="button" ng-click="addForum()"
@@ -31,4 +47,7 @@
 			</form>
 		</div>
 	</div>
-</div> -->
+</div>
+<div ng-show="currentUser == undefined">
+Please Login to view this page.
+</div>

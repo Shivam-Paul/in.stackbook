@@ -41,7 +41,7 @@ public class UserDAOImpl implements UserDAO {
 				user.setRole(1);
 			}
 			if(user.getActive()==null) {
-				user.setActive('N');
+				user.setActive('Y');
 			}
 			user.setRegistered_date(new Timestamp(System.currentTimeMillis()));
 			

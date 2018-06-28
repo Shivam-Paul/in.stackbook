@@ -24,6 +24,7 @@ public class Friend extends BaseDomain {
 	
 	private int friends;  
 	//  1(Yes)/2(1 requested 2)/3(1 requested 2 but ignored)/4(1 blocked 2)/5(2 blocked 1)/6(Both blocked each other)
+		
 
 	public int getFriend_id() {
 		return friend_id;
@@ -57,7 +58,5 @@ public class Friend extends BaseDomain {
 		this.friends = friends;
 	}
 
-	
-	
 
 }

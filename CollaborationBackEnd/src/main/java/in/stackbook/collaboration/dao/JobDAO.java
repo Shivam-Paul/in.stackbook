@@ -16,20 +16,14 @@ public interface JobDAO {
 	public boolean deleteJob(int job_id);
 	
 	public Job getJob(int job_id);
-	
-	public String getJobTitle(int job_id);
-	
+		
 	public List<Job> list();
+		
+	public List<Job> listByStatus(char status);
 	
-	public List<Integer> listID();
+	public List<Job> listByCompanyName(String company_name);
 	
-	public List<String> listTitle();
-	
-	public List<Integer> listByStatus(char status);
-	
-	public List<Integer> listAllByCompanyName(String company_name);
-	
-	public List<Integer> listAllAboveSalary(int salary);
+	public List<Job> listAboveSalary(int salary);
 	
 	
 	//JobApplication methods

@@ -70,19 +70,19 @@ public class BulletinDAOImpl implements BulletinDAO {
 		
 	}
 
-	public List<Integer> listAllID() {
+	/*public List<Integer> listAllID() {
 		return (List<Integer>)getSession().createCriteria(Bulletin.class)
 		.setProjection(Projections.projectionList()
 		.add(Projections.property("bulletin_id"), "bulletin_id"))
 		.list();
-	}
+	}*/
 	
-	public List<String> listAllTitle() {
+	/*public List<String> listAllTitle() {
 		return (List<String>)getSession().createCriteria(Bulletin.class)
 		.setProjection(Projections.projectionList()
 		.add(Projections.property("title"), "title"))
 		.list();
-	}
+	}*/
 
 
 }

@@ -32,8 +32,9 @@ private static AnnotationConfigApplicationContext context;
 	@Test
 	public void saveFriendTestCase() {
 		
-		friend.setEmail_id1("1@2.com");
-		friend.setEmail_id2("test");
+		friend.setEmail_id1("admin@gmail.com");
+		friend.setEmail_id2("temp@gmail.com");
+		friend.setFriends(1);
 		
 		Assert.assertEquals("Save Friend Test Case", true, friendDAO.save(friend));
 		
@@ -53,7 +54,7 @@ private static AnnotationConfigApplicationContext context;
 	@Test
 	public void deleteFriendTestCase() {
 		
-		boolean actual = friendDAO.delete(1);
+		boolean actual = friendDAO.delete(66);
 		
 		Assert.assertEquals(true, actual);
 		
@@ -69,19 +70,27 @@ private static AnnotationConfigApplicationContext context;
 	}
 	
 	@Test
-	public void getAllUserFriendsTestCase() {
+	public void listFriendsTestCase() {
 		
-		int actual = friendDAO.listFriends("1@2.com").size();
+		int actual = friendDAO.listFriends("abc@gmail.com").size();
 		
-		Assert.assertEquals(0, actual);
-
+		Assert.assertEquals(1, actual);
 		
 	}
 	
 	@Test
-	public void getAllSentFriendRequestsTestCase() {
+	public void listSentFriendRequestsTestCase() {
 		
-		int actual = friendDAO.listSentFriendRequests("a@b.com").size();
+		int actual = friendDAO.listSentFriendRequests("abc@gmail.com").size();
+		
+		Assert.assertEquals(1, actual);
+
+	}
+	
+	@Test
+	public void listReceivedFriendRequestsTestCase() {
+		
+		int actual = friendDAO.listReceivedFriendRequests("admin@gmail.com").size();
 		
 		Assert.assertEquals(1, actual);
 
@@ -89,22 +98,29 @@ private static AnnotationConfigApplicationContext context;
 	}
 	
 	@Test
-	public void getAllReceivedFriendRequestsTestCase() {
+	public void listBlockedUsersTestCase() {
 		
-		int actual = friendDAO.listReceivedFriendRequests("1@2.com").size();
+		int actual = friendDAO.listBlockedUsers("abc@gmail.com").size();
+		
+		Assert.assertEquals(2, actual);
+
+	}
+	
+	@Test
+	public void listSuggestedUsersTestCase() {
+		
+		int actual = friendDAO.listSuggestedUsers("abc@gmail.com").size();
 		
 		Assert.assertEquals(1, actual);
-
 		
 	}
 	
 	@Test
-	public void getAllBlockedUsersTestCase() {
+	public void listMutualFriendsTestCase() {
 		
-		int actual = friendDAO.listBlockedUsers("1@2.com").size();
+		int actual = friendDAO.listMutualFriends("shivam@gmail.com", "admin@gmail.com").size();
 		
-		Assert.assertEquals(0, actual);
-
+		Assert.assertEquals(1, actual);
 		
 	}
 	

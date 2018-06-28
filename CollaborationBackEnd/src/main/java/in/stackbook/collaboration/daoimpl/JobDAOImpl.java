@@ -7,7 +7,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +49,7 @@ public class JobDAOImpl implements JobDAO {
 			//job.setID(getMaxValue()+1);
 			job.setDate_created(new Timestamp(System.currentTimeMillis()));
 			if(job.getStatus()=='\0') {
-				job.setStatus('A');
+				job.setStatus('O');
 			}
 			if(job.getOpenings()==0) {
 				job.setOpenings(1);
@@ -94,84 +93,38 @@ public class JobDAOImpl implements JobDAO {
 		
 	}
 	
-	public String getJobTitle(int job_id) {
-		
-		return (String)getSession().createCriteria(Job.class)
-				.setProjection(Projections.projectionList()
-				.add(Projections.property("title"), "title"))
-				.add(Restrictions.eq("job_id", job_id))
-				.uniqueResult();
-		
-	}
-	
 	public List<Job> list() {
 		
 		return (List<Job>)getSession().createQuery("from Job").list();
 		
 	}
 
-	public List<Integer> listID() {
+	public List<Job> listByStatus(char status) {
 		
-		return 	(List<Integer>)getSession().createCriteria(Job.class)
-				.setProjection(Projections.projectionList()
-				.add(Projections.property("job_id"), "job_id"))
+		return (List<Job>)getSession().createCriteria(Job.class)
+				.add(Restrictions.eq("status", status))
+				.list();
+
+	}
+
+	public List<Job> listByCompanyName(String company_name) {
+		
+		return (List<Job>)getSession().createCriteria(Job.class)
+				.add(Restrictions.eq("company_name", company_name))
 				.list();
 		
 	}
-	
-	public List<String> listTitle() {
-		
-		return (List<String>)getSession().createCriteria(Job.class)
-				.setProjection(Projections.projectionList()
-				.add(Projections.property("title"), "title"))
-				.list();
-		
-	}
 
-	public List<Integer> listByStatus(char status) {
+	public List<Job> listAboveSalary(int salary) {
 		
-		String hql = "SELECT job_id from Job where status = ':status'";
-		
+		String hql = "from Job where salary >= ':salary'";
 		Query query = getSession().createQuery(hql);
-		
-		query.setParameter("status", status);
-		
-		return query.list();
-		
-		/*return (List<Integer>)getSession().createNativeQuery("select job_id from c_job where " + 
-				"status='"+status+"'").list();*/
-
-	}
-
-	public List<Integer> listAllByCompanyName(String company_name) {
-		
-		String hql = "SELECT job_id from Job where company_name = ':company_name'";
-		
-		Query query = getSession().createQuery(hql);
-		
-		query.setParameter("company_name", company_name);
-		
-		return query.list();
-		
-		/*return (List<Integer>)getSession().createNativeQuery("select job_id from c_job where " + 
-				"company_name='"+company_name+"'").list();*/
-		
-	}
-
-	public List<Integer> listAllAboveSalary(int salary) {
-		
-		String hql = "SELECT job_id from Job where salary >= ':salary'";
-		
-		Query query = getSession().createQuery(hql);
-		
 		query.setParameter("salary", salary);
 		
 		return query.list();
 		
-		/*return (List<Integer>)getSession().createNativeQuery("select job_id from c_job where " + 
-				"salary>="+salary).list();*/
-		
 	}
+	
 	
 	//Job Application ##########################################################
 

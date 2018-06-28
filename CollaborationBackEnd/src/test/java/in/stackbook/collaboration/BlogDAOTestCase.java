@@ -65,7 +65,7 @@ public class BlogDAOTestCase {
 	@Test
 	public void getBlogTestCase() {
 		
-		Assert.assertNotNull("Get Blog Test Case", blogDAO.get(1));
+		Assert.assertNotNull("Get Blog Test Case", blogDAO.get(41));
 		
 	}
 	
@@ -81,7 +81,7 @@ public class BlogDAOTestCase {
 	@Test 
 	public void getAllBlogsByTestCase() {
 		
-		int actual = blogDAO.listAllFrom("1@2.com").size();
+		int actual = blogDAO.list("1@2.com").size();
 		
 		Assert.assertEquals("Get all Blogs From Test Case", 1, actual);
 		
@@ -137,7 +137,7 @@ public class BlogDAOTestCase {
 	@Test 
 	public void getAllBlogCommentsFrom() {
 		
-		int actual = blogDAO.listAllFrom("1@2.com").size();
+		int actual = blogDAO.listAllCommentsFrom("1@2.com").size();
 		
 		Assert.assertEquals("Get all Blog Comments From Test Case", 1, actual);
 		

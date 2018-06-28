@@ -1,0 +1,24 @@
+<div class="container" ng-Controller="ForumController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Pending Approval Forums</font>
+		</center>
+	</h1>
+	<ul>
+	<div ng-repeat="forum in pendingApprovalForums">
+	
+	<li>
+	<a href="" ng-click="$event.preventDefault();viewForum(forum.forum_id)">
+		{{forum.title}}
+	</a>
+	&nbsp; by {{forum.email_id}}
+	<a href="" ng-click="$event.preventDefault();approveForum(forum.forum_id)">
+		Approve Forum
+	</a>
+	<a href="" ng-click="$event.preventDefault();deleteForum(forum.forum_id)">
+		Delete Forum
+	</a>
+	</li>
+	</div>
+	</ul>
+</div>

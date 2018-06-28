@@ -1,5 +1,6 @@
 package in.stackbook.collaboration.rest.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -16,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import in.stackbook.collaboration.dao.BlogDAO;
-import in.stackbook.collaboration.dao.LikeDAO;
 import in.stackbook.collaboration.model.Blog;
 import in.stackbook.collaboration.model.BlogComment;
-import in.stackbook.collaboration.model.Like;
 import in.stackbook.collaboration.model.User;
 
 @RestController
@@ -31,10 +30,6 @@ public class BlogController {
 	@Autowired BlogDAO blogDAO;
 	
 	@Autowired BlogComment blogComment;
-	
-	@Autowired Like like;
-	
-	@Autowired LikeDAO likeDAO;
 	
 	@Autowired HttpSession session;
 	
@@ -53,35 +48,15 @@ public class BlogController {
 		
 	}
 	
-	@GetMapping("/like/add/{blog_id}/{liked}")
-	public ResponseEntity<Like> addLike(@PathVariable int blog_id, @PathVariable int liked) {
+	@PostMapping("/update")
+	public ResponseEntity<Blog> updateBlog(@RequestBody Blog blog) {
 		
-		user = (User)session.getAttribute("loggedInUser");
-		
-		if(user != null) {
-			if(blogDAO.get(blog_id) != null) {
-				if(likeDAO.get('B', blog_id, user.getEmail_id()) != null) {
-					
-					like.setReference_table('B');
-					like.setTable_id(blog_id);
-					like.setEmail_id(user.getEmail_id());
-					like.setLiked(liked);
-					
-					if(likeDAO.save(like)) {
-						like.setMessage("Like added successfully");
-						return new ResponseEntity<Like>(like, HttpStatus.OK);
-					}
-					like.setMessage("Could not add the like .. please try after some time");
-					return new ResponseEntity<Like>(like, HttpStatus.INTERNAL_SERVER_ERROR);
-				}
-				like.setMessage("You have alread liked/disliked this blog");
-				return new ResponseEntity<Like>(like, HttpStatus.CONFLICT);
-			}
-			like.setMessage("Blog does not exist");
-			return new ResponseEntity<Like>(like, HttpStatus.NOT_FOUND);
+		if(blogDAO.update(blog)) {
+			blog.setMessage("Blog updated successfully");
+			return new ResponseEntity<Blog>(blog, HttpStatus.OK);
 		}
-		like.setMessage("You need to login to like/dislike a blog");
-		return new ResponseEntity<Like>(like, HttpStatus.UNAUTHORIZED);
+		blog.setMessage("Could not save the blog .. please try after some time");
+		return new ResponseEntity<Blog>(blog, HttpStatus.INTERNAL_SERVER_ERROR);
 		
 	}
 	
@@ -90,7 +65,7 @@ public class BlogController {
 		
 		blog = blogDAO.get(blog_id);
 		
-		if(blog!=null) {
+		if(blog != null) {
 			return new ResponseEntity<Blog>(blog, HttpStatus.OK);
 		}
 		blog = new Blog();
@@ -129,8 +104,7 @@ public class BlogController {
 			tempBlog.setTitle((String)title.next());
 			blogs.add(tempBlog);
 		}
-		return new ResponseEntity<List<Blog>>(blogs, HttpStatus.OK);*/
-		
+		return new ResponseEntity<List<Blog>>(blogs, HttpStatus.OK);*/	
 	}
 	
 	@GetMapping("/listByApproval/{approved}")		
@@ -148,10 +122,20 @@ public class BlogController {
 
 	}
 	
-	@GetMapping("/listUserBlogs/{email_id}")		
-	public ResponseEntity<List<Blog>> listAllUserBlogs(@PathVariable String email_id) {
+	@GetMapping("/listUserBlogs")		
+	public ResponseEntity<List<Blog>> listAllUserBlogs() {
 		
-		List<Blog> blogs = blogDAO.list(email_id);
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<Blog> blogs = new ArrayList<Blog>();
+		
+		if(user == null) {
+			blog.setMessage("Please login to view your blogs");
+			blogs.add(blog);
+			return new ResponseEntity<List<Blog>>(blogs, HttpStatus.UNAUTHORIZED);
+		}
+		
+		blogs = blogDAO.list(user.getEmail_id());
 		
 		if(blogs.isEmpty()) {
 			blog = new Blog();
@@ -164,7 +148,7 @@ public class BlogController {
 	}
 	
 		
-	@PostMapping("/addView/{blog_id}")
+	@GetMapping("/addView/{blog_id}")
 	public ResponseEntity<Blog> addView(@PathVariable int blog_id) {
 		
 		blog = blogDAO.get(blog_id);
@@ -203,7 +187,7 @@ public class BlogController {
 		
 	}
 	
-	@DeleteMapping("/delete/{blog_id}")
+	@GetMapping("/delete/{blog_id}")
 	public ResponseEntity<Blog> deleteBlog(@PathVariable int blog_id) {
 		
 		if(blogDAO.delete(blog_id)) {
@@ -243,7 +227,7 @@ public class BlogController {
 		
 	}
 	
-	@DeleteMapping("/comment/delete/{b_comment_id}")
+	@GetMapping("/comment/delete/{b_comment_id}")
 	public ResponseEntity<BlogComment> deleteBlogComment(@PathVariable int b_comment_id) {
 		
 		if(blogDAO.deleteBlogComment(b_comment_id)) {
@@ -268,10 +252,42 @@ public class BlogController {
 		return new ResponseEntity<Blog>(blog, HttpStatus.NOT_FOUND);
 	}
 	
-	@GetMapping("/comment/list/{blog_id}")		
+	@GetMapping("/comment/list/on/{blog_id}")		
 	public ResponseEntity<List<BlogComment>> listAllCommentsOn(@PathVariable int blog_id) {
 		
 		List<BlogComment> blogComments = blogDAO.list(blog_id);
+		if(blogComments.isEmpty()) {
+			blogComment = new BlogComment();
+			blogComment.setMessage("No one has commented on this blog yet");
+			blogComments.add(blogComment);
+			return new ResponseEntity<List<BlogComment>>(blogComments, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<List<BlogComment>>(blogComments, HttpStatus.OK);
+	}
+	
+	@GetMapping("/comment/listBy/on/{blog_id}")		
+	public ResponseEntity<List<BlogComment>> listAllCommentsOnBy(@PathVariable int blog_id) {
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<BlogComment> blogComments = blogDAO.list(blog_id, user.getEmail_id());
+		if(blogComments.isEmpty()) {
+			blogComment = new BlogComment();
+			blogComment.setMessage("No one has commented on this blog yet");
+			blogComments.add(blogComment);
+			return new ResponseEntity<List<BlogComment>>(blogComments, HttpStatus.OK);
+		}
+		
+		return new ResponseEntity<List<BlogComment>>(blogComments, HttpStatus.OK);
+	}
+	
+	@GetMapping("/comment/listFrom")		
+	public ResponseEntity<List<BlogComment>> listAllCommentsFrom() {
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<BlogComment> blogComments = blogDAO.listAllCommentsFrom(user.getEmail_id());
 		if(blogComments.isEmpty()) {
 			blogComment = new BlogComment();
 			blogComment.setMessage("No one has commented on this blog yet");

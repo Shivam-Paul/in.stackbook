@@ -1,25 +1,24 @@
-<div class="container" ng-controller="JobController">
-	<h1 class="well">
+<div class = "container" ng-controller = "JobController">
+	<h1 class = "well">
 		<center>
-			<font face="Monotype Corsiva">{{jobData.title}}</font>
+			<font face="Monotype Corsiva"> Job Title: {{jobData.title}} </font>
 		</center>
 	</h1>
-	<div ng-show="jobApplicationData.status=='A'">You have already applied for this job</div> <br>
-	<div ng-show="jobApplicationData.status=='R'">Your application has been rejected</div> <br>
-	<div ng-show="jobApplicationData==undefined">
-	<a href="" ng-click="addJobApplication(jobData.job_id)">Apply</a>
+	<div ng-show = "jobApplicationData.status == 'A'"> Applied </div> <br>
+	<div ng-show = "jobApplicationData.status == 'R'"> Rejected </div> <br>
+	<div ng-hide = "jobApplicationData == undefined">
+		<a href = "" ng-click = "addJobApplication(jobData.job_id)"> Apply </a>
 	</div>
 	Company Name: {{jobData.company_name}} <br>
 	Salary: {{jobData.salary}} <br>
 	Qualification: {{jobData.qualification}} <br>
-	Added on: {{jobData.date_created}} <br>
+	Added on: {{jobData.date_created | date:"d-MMM-yy 'at' HH:mm:ss"}} <br>
 	Number of Openings: {{jobData.openings}} <br>
-	<div align="right">
-		Apply Before {{jobData.date_created |
-		date:"d-MMM-yy 'at' HH:mm:ss"}}
+	<div align = "right">
+		Last date to apply: {{jobData.apply_before | date:"d-MMM-yy"}}
 	</div>
 	
 	<br> <br>
-	<div align="center">{{jobData.description}}</div>
+	<div align = "center"> {{jobData.description}} </div>
 	<br> <br>
 </div>

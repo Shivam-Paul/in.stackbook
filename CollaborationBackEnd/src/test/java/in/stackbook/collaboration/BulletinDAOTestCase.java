@@ -62,26 +62,6 @@ public class BulletinDAOTestCase {
 		
 		Assert.assertNotNull("Get Bulletin Test Case", bulletinDAO.get(1));
 		
-	}
-	
-	@Test
-	public void getAllBulletinID() {
-		
-		int actual = bulletinDAO.listAllID().size();
-		
-		Assert.assertEquals(1, actual);
-		
-	}
-	
-	@Test
-	public void getAllBulletinTitle() {
-		
-		int actual = bulletinDAO.listAllTitle().size();
-		
-		Assert.assertEquals(1, actual);
-		
-	}
-	
-	
+	}	
 
 }

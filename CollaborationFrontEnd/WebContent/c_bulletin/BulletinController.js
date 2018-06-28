@@ -11,11 +11,11 @@ myApp.controller("BulletinController", function($scope, $http, $rootScope, $loca
 	
 	$scope.addBulletin = function() {
 		
-		alert('Add Bulletin');
+		console.log('Add Bulletin');
 		
 		console.log('Adding Bulletin');
 		
-		$http.post('http://localhost:8081/CollaborationRestService/bulletin/save',$scope.bulletin)
+		$http.post('http://localhost:8081/CollaborationRestService/bulletin/save', $scope.bulletin)
 		.then(function(response) {
 			$scope.viewBulletin($scope.bulletin.bulletin_id);
 		});
@@ -23,24 +23,17 @@ myApp.controller("BulletinController", function($scope, $http, $rootScope, $loca
 	
 	$scope.viewBulletin = function(bulletin_id) {
 		
-		alert('View Bulletin');
+		console.log('View Bulletin');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/bulletin/get/'+bulletin_id)
-		.then(function(response) {
-					
-			console.log(response.data);
-			
-			$rootScope.bulletinData = response.data;
-			$location.path('viewBulletin');
-			
-		});
+		$scope.get(bulletin_id);
+		$location.path('viewBulletin');
 	}
 	
 	$scope.update = function(bulletin_id) {
 		
-		alert('Update Bulletin');
+		console.log('Update Bulletin');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/bulletin/update'+bulletin_id)
+		$http.get('http://localhost:8081/CollaborationRestService/bulletin/update' + bulletin_id)
 		.then(function(response) {
 			console.log('Update Bulletin');
 			$scope.viewBulletin(bulletin_id);
@@ -53,6 +46,17 @@ myApp.controller("BulletinController", function($scope, $http, $rootScope, $loca
 		.then(function(response) {
 			$scope.allBulletinData = response.data;
 		});
+	}
+	
+	$scope.get = function(bulletin_id) {
+		
+		console.log('Get Bulletin');
+		
+		$http.get('http://localhost:8081/CollaborationRestService/bulletin/get' + bulletin_id)
+		.then(function(response) {
+			$scope.bulletinData = response.data;
+		});
+		
 	}
 	
 	showAllBulletins();

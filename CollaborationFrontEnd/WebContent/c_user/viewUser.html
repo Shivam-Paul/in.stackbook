@@ -1,0 +1,47 @@
+<div class="container" ng-controller="UserController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">{{selectedUserFromBlog.name}}</font>
+		</center>
+	</h1>
+	<!-- <div ng-controller="FriendController">
+	<div ng-show="friendData==undefined || friendData.friends == 0">
+		<button class="btn btn-default regbutton" ng-click="addFriend(selectedUserFromBlog.email_id, 2)" value="Send Friend Request">
+			Send Friend Request
+		</button>
+	</div>
+	<div ng-show="friendData.friends==1">
+		<button class="btn btn-default regbutton" ng-click="deleteFriend(friendData.friend_id)">
+			Unfriend
+		</button>
+	</div> -->
+	<img ng-src="http://localhost:8081/CollaborationRestService/user/get/image/{{currentUser.email_id}}."
+				altSrc="http://localhost:8081/CollaborationRestService/user/get/image/default@gmail.com." 
+				onerror="this.src = $(this).attr('altSrc')">
+	<br>
+	<b>Name: {{selectedUserFromBlog.email_id}}</b>
+	<p>Mobile: {{selectedUserFromBlog.mobile}}</p>
+	</div>
+	<!-- User Blogs
+	<ol>
+	<div ng-controller="BlogController" ng-repeat="blog in userBlogData">
+		<li>
+		<a href="" ng-click="$event.preventDefault();viewBlog(blog.blog_id)">
+			{{blog.title}}
+		</a>
+		&nbsp; by {{blog.email_id}}
+		 &nbsp; Views: {{blog.views}}
+		</li>
+	</div>
+	</ol>
+	User Friends
+	<ol>
+	<div ng-controller="FriendController" ng-repeat="friend in allFriendData">
+		<li>
+		<a href="" ng-click="$event.preventDefault();viewUser(friend.email_id)">
+			{{friend.name}}
+		</a>
+	</div>
+	</ol> -->
+</div>
+	

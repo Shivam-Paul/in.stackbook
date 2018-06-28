@@ -1,7 +1,5 @@
 package in.stackbook.collaboration.rest.controller;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ public class BulletinController {
 	
 	@Autowired BulletinDAO bulletinDAO;
 	
-	@GetMapping("/list")		
+	/*@GetMapping("/list")		
 	public ResponseEntity<List<Bulletin>> listAllBulletins() {
 		
 		List<Integer> bulletin_id = bulletinDAO.listAllID();
@@ -48,6 +46,20 @@ public class BulletinController {
 		}
 		return new ResponseEntity<List<Bulletin>>(bulletins, HttpStatus.OK);
 		
+	}*/
+	
+	@GetMapping("/list")		
+	public ResponseEntity<List<Bulletin>> listAllBulletin() {
+		
+		List<Bulletin> bulletins = bulletinDAO.list();
+		
+		if(bulletins.isEmpty()) {
+			bulletin = new Bulletin();
+			bulletin.setMessage("No blogs are available");
+			bulletins.add(bulletin);
+			return new ResponseEntity<List<Bulletin>>(bulletins, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<Bulletin>>(bulletins, HttpStatus.OK);
 	}
 	
 	@PostMapping("/save")

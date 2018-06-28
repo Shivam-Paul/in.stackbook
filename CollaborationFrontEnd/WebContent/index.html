@@ -1,64 +1,316 @@
 <html>
 	<head>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-cookies.js"></script>
+	<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+	<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+	<script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-cookies.js"></script>
 
-	<script src="RouteConfig.js"></script>
-	<script src="c_user/UserController.js"></script>
-	<script src="c_blog/BlogController.js"></script>
+	<script src = "RouteConfig.js"></script>
+	<script src = "c_blog/BlogController.js"></script>
+	<script src = "c_bulletin/BulletinController.js"></script>
+	<script src = "c_chat/ChatController.js"></script>
+	<script src = "c_chat/ChatService.js"></script>
+	<script src = "c_forum/ForumController.js"></script>
+	<script src = "c_friend/FriendController.js"></script>
+	<script src = "c_job/JobController.js"></script>
+	<script src = "c_user/UserController.js"></script>
+	<script src = "c_chat/sockjs.js"></script>
+	<script src = "c_chat/stomp.js"></script>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	</head>
-	
-	<body ng-app="myApp">
+	<meta name = "viewport" content = "width = device-width, initial-scale = 1">
+	<link rel = "stylesheet" href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src = "https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script src = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.16.3/lodash.js"></script>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.1/stomp.js"></script>
+	<script src = "https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.1/sockjs.js"></script>
 
-	<div class="container">
-		<nav class="navbar navbar-inverse">
-			<div class="container-fluid">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="#/"> Stackbook </a>
-				</div>
-			<ul class="nav navbar-nav">
-				<li><a href="#/home">Home</a></li>
-				<li><a href="#/login">Login</a></li>
-				<li><a href="#/register">Register</a></li>
-				
-				<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown" href="">Blog
-				<span class="caret"></span></a>
-				<ul class="dropdown-menu">
-					<li ng-hide="currentUser==undefined"><a href="#/addBlog">Add Blog</a></li>
-					<li><a href="#/showAllBlogs">View Blogs</a></li>
-					<li ng-hide="currentUser==undefined"><a href="#/myBlog">My Blog</a></li>
-					<li ng-show="currentUser!=undefined && currentUser.role=='A'"><a href="#/home">Test</a>
-				</ul>
-				</li>
-				
-				<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown" href="">Bulletin
-				<span class="caret"></span></a>
-				<ul class="dropdown-menu">
-					<li ng-show="currentUser!=undefined && currentUser.role=='A'"><a href="#/addBlog">Add Bulletin</a></li>
-					<li><a href="#/showAllBulletins">View Bulletins</a></li>
-				</ul>
-				</li>
-								
-			</ul>
-			<div class="nav navbar-nav navbar-right" ng-hide="currentUser==undefined">
-			<font color="white" face="calibri" size='2'> Welcome: {{currentUser.name}}</font>
-			<form ng-controller="UserController">
-			<input type="submit" value="logout" class="btn btn-info" ng-submit="logout()"/>
-			</form>
-			</div>
-			</div>
-		</nav>
-		<div ng-view>
+	<link href = "https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300" rel = "stylesheet" type = "text/css">
+
+<style>
+body,.container-fluid {
+    background-color:#ADD8E6;
+	font-family: 'Open Sans Condensed', sans-serif;
+    font-size: 18px;
+}
+
+.nav001 {
+	background-color: #39FF14;
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 25px;
+}
+
+.nav001 : navbar-header {
+	font-family: 'Open Sans Condensed', sans-serif;
+	font-size: 35px;
+}
+.register-form {
+    font-size: 16px;
+	left: 50%;
+    top: 50%;
+    position: absolute;
+    -webkit-transform: translate3d(-50%, -50%, 0);
+    -moz-transform: translate3d(-50%, -50%, 0);
+    transform: translate3d(-50%, -50%, 0);
+}
+
+.regbutton {
+    height: 50px;
+    width: 200px;
+    background-color:tomato;
+    border-radius: 0px;
+    font-size: 18px;
+    color:white;
+    border: none !important;
+    margin-bottom: 5px;
+}
+.regbutton:hover {
+    color: white;
+    background-color:#aa422f;
+}
+.regbutton:active {
+    color: white;
+    background-color:#aa422f;
+}
+.logbutton {
+    height: 50px;
+    width: 200px;
+    background-color:yellowgreen;
+    border-radius: 0px;
+    font-size: 18px;
+    color:white;
+    border: none !important;
+    margin-bottom: 5px;
+}
+.logbutton:hover {
+    color: white;
+    background-color:darkolivegreen;
+}
+.logbutton:active {
+    color: white;
+    background-color:darkolivegreen;
+}
+
+.register-form label {
+    color: aliceblue;
+}
+
+.register-form input {
+    margin-bottom: 5px;
+    width: 430px;
+    height: 40px;
+    border-radius: 0px;
+}
+
+/* The side navigation menu */
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+
+/* The navigation menu links */
+.sidenav a {
+    padding: 8px 8px 8px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s;
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+    color: #39FF14;
+}
+
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    margin-left: 50px;
+}
+
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+    transition: margin-left .5s;
+    padding: 20px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+.button1 {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+</style>
+<script language="javascript">
+/* Set the width of the side navigation to 250px */
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+/* Set the width of the side navigation to 0 */
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+</script>
+</head>
+
+<body ng-app = "myApp">
+<div class = "nav001" ng-controller = "UserController">
+	<nav class = "navbar navbar-1">
+		<div class = "navbar-header">
+			<a class = "navbar-brand" href = "#/"> Stackbook </a>
 		</div>
+		<ul class = "nav navbar-nav">
+			<li>
+				<a href = "#/home">Home</a>
+			</li>
+			<li ng-show = "currentUser == undefined">
+				<a href = "#/login">Login</a>
+			</li>
+			<li ng-show = "currentUser == undefined">
+				<a href = "#/register">Register</a>
+			</li>
 
+			<li class = "dropdown">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = "" ng-show = "currentUser != undefined">Blog
+			<span class = "caret"></span></a>
+			<ul class = "dropdown-menu">
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/addBlog">Add Blog</a>
+				</li>
+				<li>
+					<a href = "#/showAllBlogs">View Blogs</a>
+				</li>
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/myBlog">My Blogs</a>
+				</li>
+				<li ng-show = "currentUser != undefined && currentUser.role == 5">
+					<a href = "#/home">Manage Blogs</a>
+				</li>
+			</ul>
+			</li>
+			
+			<li class = "dropdown">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = "">Bulletin
+			<span class = "caret"></span></a>
+			<ul class = "dropdown-menu">
+				<li ng-show = "currentUser != undefined && currentUser.role == 5">
+					<a href = "#/addBulletin">Add Bulletin</a>
+				</li>
+				<li><a href = "#/showAllBulletins">View Bulletins</a></li>
+			</ul>
+			</li>
+			
+			<li class = "dropdown">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = "" ng-show = "currentUser != undefined">Forum
+				<span class = "caret"></span>
+			</a>
+			<ul class = "dropdown-menu">
+				<li>
+					<a href = "#/forum">View Forums</a>
+				</li>
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/myForums">My Forums</a>
+				</li>
+				<li ng-show = "currentUser != undefined && currentUser.role == 5">
+					<a href = "#/manageForum">Manage Forum</a>
+				</li>
+			</ul>
+			</li>
+			
+			<!-- <li class = "dropdown" ng-show = "currentUser != undefined">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = "">Friend
+				<span class = "caret"></span>
+			</a>
+			<ul class = "dropdown-menu">
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/friends"> My Friends </a>
+				</li>
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/suggestedUsers"> Suggested Users </a>
+				</li>
+				<li ng-show = "currentUser != undefined">
+					<a href = "#/blockedUsers"> Blocked Users </a>
+				</li>
+			</ul>
+			</li> -->
+			
+			<li class = "dropdown" ng-show = "currentUser != undefined">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = "">Job
+				<span class = "caret"></span>
+			</a>
+			<ul class = "dropdown-menu">
+				<li>
+					<a href = "#/showAllJobs"> View Jobs </a>
+				</li>
+				<li>
+					<a href = "#/myJobApplications"> My Applications </a>
+				</li>
+				<li ng-show = "currentUser.role == 5">
+					<a href = "#/addJob"> Add Job </a>
+				</li>
+			</ul>
+			</li>
+			
+			<!-- <li ng-show = "currentUser != undefined">
+				<a href = "#/chat">Chat</a>
+			</li> -->
+			<li ng-show = "currentUser != undefined">
+				<a href = "https://www.indiatoday.in/news.html">News</a>
+			</li>
+			<li ng-show = "currentUser != undefined">
+				<a href = "#/editProfile"> {{currentUser.name}}</a>
+				<!-- <img src = "/user/get/image/{{currentUser.email_id}}." width = "50px" height = "25px"> -->
+			</li>
+			<li ng-show = "currentUser != undefined">
+				<a href = "" ng-click = "logout()">Logout</a>
+			</li>
+		</ul>
+	</nav>
+</div>
+
+<div id="mySidenav" class="sidenav" ng-hide = "currentUser == undefined || currentUser.email_id == null">
+  <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+  <a href="#/friends" onclick="closeNav()" ng-show = "currentUser != undefined">My Friends</a>
+  <a href="#/suggestedUsers" onclick="closeNav()" ng-show = "currentUser != undefined">Suggested Users</a>
+  <a href="#/blockedUsers" onclick="closeNav()" ng-show = "currentUser != undefined">Blocked Users</a>
+  <a href="#/chat" onclick="closeNav()" ng-show="currentUser != undefined">Chat Now</a>
+</div>
+
+<!-- Use any element to open the sidenav -->
+<button class="button1" width="50" height="50" onclick="openNav()">Friends</button>
+
+<div class = "container">
+		
+	<div ng-view>
 	</div>
-	</body>
-	</html>
+
+</div>
+
+</body>
+</html>

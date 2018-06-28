@@ -15,19 +15,31 @@ public interface ForumDAO {
 
 	public Forum get(int forum_id);
 	
-	public String getTitle(int forum_id);
+	//public String getTitle(int forum_id);
 	
 	public List<Forum> list();
 	
-	public List<Integer> listByLevel(int forum_level);
+	public List<Forum> listByApproval(char approved);
 	
-	//public List<Integer> listByViewAccess(int view_access);
-	
-	//public List<Integer> listByPostAccess(int new_post_access);
+	public List<Forum> listByArchive(char archived);
 		
-	public List<Integer> listPendingApprovalForums();
+	public List<Forum> listByLevel(int forum_level);
+	
+	public List<Forum> listAllForParentID(int parent_id);
+		
+	public List<Forum> listByNewPostAccess(int new_post_access);
+	
+	public List<Forum> listByViewAccess(int view_access);
+	
+	public List<Forum> listByCommentAccess(int comment_access);
+				
+	public List<Forum> listPendingApprovalForums();
+	
+	public List<Forum> listApprovedForumsInCurrentLevelByParentID(int forum_level, int parent_id);
+	
 	
 	//Forum Comments
+	
 	
 	public boolean save(ForumComment forumComment);
 	
@@ -37,7 +49,11 @@ public interface ForumDAO {
 
 	public ForumComment getForumComment(int f_comment_id);
 	
-	public List<ForumComment> list(int forum_id);	
+	public List<ForumComment> list(int forum_id);
+	
+	public List<ForumComment> list(int forum_id, String email_id);
+	
+	public List<ForumComment> list(String email_id);
 	
 		
 }

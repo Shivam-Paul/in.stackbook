@@ -7,7 +7,6 @@ import javax.transaction.Transactional;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -67,15 +66,13 @@ public class BlogDAOImpl implements BlogDAO {
 		return (Blog)getSession().get(Blog.class, blog_id);
 	}
 	
-	public String getBlogTitle(int blog_id) {
-		
+	/*public String getBlogTitle(int blog_id) {
 		return (String)getSession().createCriteria(Blog.class)
 				.setProjection(Projections.projectionList()
 				.add(Projections.property("title"), "title"))
 				.add(Restrictions.eq("blog_id", blog_id))
 				.uniqueResult();
-		
-	}
+	}*/
 	
 	public List<Blog> list() {
 		
@@ -115,7 +112,6 @@ public class BlogDAOImpl implements BlogDAO {
 	public boolean save(BlogComment blogComment) {
 		try {			
 			blogComment.setComment_date(new Timestamp(System.currentTimeMillis()));
-			blogComment.setScore(0);
 			getSession().save(blogComment);
 			return true;
 		}
@@ -157,19 +153,18 @@ public class BlogDAOImpl implements BlogDAO {
 				.list();
 	}
 	
-	public List<BlogComment> listAllCommentsFrom(String email_id) {
-		return (List<BlogComment>)getSession().createCriteria(BlogComment.class)
-				.add(Restrictions.eq("email_id", email_id))
-				.list();
-	}
-	
 	public List<BlogComment> list(int blog_id, String email_id) {
 		return (List<BlogComment>)getSession().createCriteria(BlogComment.class)
 				.add(Restrictions.eq("blog_id", blog_id))
 				.add(Restrictions.eq("email_id", email_id))
 				.list();
 	}
-
+	
+	public List<BlogComment> listAllCommentsFrom(String email_id) {
+		return (List<BlogComment>)getSession().createCriteria(BlogComment.class)
+				.add(Restrictions.eq("email_id", email_id))
+				.list();
+	}
 	
 
 }

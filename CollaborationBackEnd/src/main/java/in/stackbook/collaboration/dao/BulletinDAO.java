@@ -16,8 +16,8 @@ public interface BulletinDAO {
 	
 	public List<Bulletin> list();
 	
-	public List<Integer> listAllID();
+	//public List<Integer> listAllID();
 	
-	public List<String> listAllTitle();
+	//public List<String> listAllTitle();
 
 }

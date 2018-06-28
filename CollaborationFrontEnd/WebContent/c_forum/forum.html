@@ -1,0 +1,47 @@
+<div class="container" ng-Controller="ForumController">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Forums</font>
+		</center>
+	</h1>
+	<div>
+		<a href="#/addForum">Create Forum</a>
+	</div>
+	<ol>
+	<div ng-repeat="forum in listApprovedForums">
+	
+	<li>
+		<span ng-show="forum.archived=='Y'">&#10003;</span>
+		<span ng-show="forum.archived=='N'"></span>
+		<a href="" ng-click="$event.preventDefault();viewForum(forum.forum_id)">
+			{{forum.title}}
+		</a>
+		<div ng-show="forum.forum_level>2">
+		&nbsp; by {{forum.email_id}} on {{forum.date_created | date:"d-MMM-yy 'at' HH:mm:ss"}}
+		</div>
+		<br>
+		{{forum.content}}
+	</li>
+	</div>
+	</ol>
+	<b> Comments </b>
+	<div ng-repeat="comment in forumCommentData">
+		<a href="" ng-click="$event.preventDefault();viewUser(comment.email_id)">
+				{{comment.email_id}}
+		</a>
+		&nbsp; &nbsp; on {{comment.comment_date | date:"d-MMM-yy 'at' HH:mm:ss"}}
+		<div align="center">
+			{{comment.forum_comment}}
+			<div align="right" ng-show="currentUser.email_id==comment.email_id">
+				<!-- <a href="" ng-click=$event.preventDefault();editComment(comment.b_comment_id,comment.blog_id)>
+					<span class="glyphicon glyphicon-pencil"></span>
+				</a> &nbsp; -->
+				<a href="" ng-click=$event.preventDefault();deleteComment(comment.b_comment_id,comment.blog_id)>
+					<span class="glyphicon glyphicon-trash"></span>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>
+	
+	

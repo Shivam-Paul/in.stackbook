@@ -7,6 +7,8 @@ import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import org.springframework.stereotype.Component;
 
@@ -15,9 +17,9 @@ import org.springframework.stereotype.Component;
 @Entity
 public class User extends BaseDomain implements Serializable {
 	
-	//@Email
+	@Email
 	@Id
-	//@NotNull
+	@NotNull
 	private String email_id;
 	
 	private String name;
@@ -31,6 +33,8 @@ public class User extends BaseDomain implements Serializable {
 	private Timestamp registered_date;
 	
 	private String mobile;
+	
+	private byte[] image;
 
 
 	public String getEmail_id() {
@@ -88,6 +92,16 @@ public class User extends BaseDomain implements Serializable {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
+
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
+	}
+	
+	
 
 	
 	

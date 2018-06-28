@@ -21,7 +21,9 @@ public interface UserDAO {
 	
 	public User validate(String email_id, String password);
 	
+	
 	//UserNotification
+	
 	
 	public boolean save(UserNotification userNotification);
 	

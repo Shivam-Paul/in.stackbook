@@ -19,21 +19,26 @@
 
 </div> -->
 
-<div class="container" ng-Controller="BlogController">
+<div class="container" ng-show = "currentUser == undefined">
+	Please login to view this page.
+</div>
+
+<div class="container" ng-Controller="BlogController" ng-show = "currentUser != undefined">
 	<h1 class="well">
 		<center>
 			<font face="Monotype Corsiva">Blogs</font>
 		</center>
 	</h1>
-	<ol>
+	<ul>
 	<div ng-repeat="blog in allBlogData">
 	
 	<li>
 	<a href="" ng-click="$event.preventDefault();viewBlog(blog.blog_id)">
-	{{blog.title}}</a>
+		{{blog.title}}
+	</a>
 	&nbsp; by {{blog.email_id}}
 	 &nbsp; Views: {{blog.views}}
 	</li>
-</div>
-</ol>
+	</div>
+	</ul>
 </div>

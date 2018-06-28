@@ -15,6 +15,8 @@ public interface FriendDAO {
 	
 	public Friend get(int friend_id);
 	
+	public Friend get(String email_id1, String email_id2);
+	
 	public List<Friend> listFriends(String email_id);
 	
 	public List<Friend> listSentFriendRequests(String email_id);
@@ -26,10 +28,8 @@ public interface FriendDAO {
 	public List<User> listSuggestedUsers(String email_id);
 	
 	public List<User> listMutualFriends(String email_id1, String email_id2);
-	
-	//select count(*) from c_user where mobile < 10
-	
-	//suggested sql 
+		
+	//suggested sql (not friends)
 	//select * from c_user where email_id not in(select email_id2 from c_friend where email_id1='test') and email_id!='test'
 
 }

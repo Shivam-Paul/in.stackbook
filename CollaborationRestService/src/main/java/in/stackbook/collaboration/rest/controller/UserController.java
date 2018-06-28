@@ -1,5 +1,6 @@
 package in.stackbook.collaboration.rest.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
@@ -14,7 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import in.stackbook.collaboration.dao.FriendDAO;
 import in.stackbook.collaboration.dao.UserDAO;
@@ -25,16 +29,16 @@ import in.stackbook.collaboration.model.UserNotification;
 @RequestMapping("/user")
 public class UserController {
 	
-	@Autowired private UserDAO userDAO;
+	@Autowired UserDAO userDAO;
 	
-	@Autowired private User user;
+	@Autowired User user;
 	
-	@Autowired private UserNotification userNotification;
+	@Autowired UserNotification userNotification;
 	
-	@Autowired private HttpSession session;
+	@Autowired FriendDAO friendDAO;
 	
-	@Autowired private FriendDAO friendDAO;
-	
+	@Autowired HttpSession session;
+		
 	//http://localhost:8081/CollaborationRestService
 	
 	@GetMapping("/")
@@ -44,38 +48,77 @@ public class UserController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
-		if(userDAO.get(user.getEmail_id())!=null) {
-			user.setMessage("User already exists with this email id");
-			return new ResponseEntity<User>(user, HttpStatus.CONFLICT);
+		if(userDAO.get(user.getEmail_id()) == null) {
+			//System.out.println(image.getBytes().length);
+			//user.setImage(image.getBytes());
+			if(userDAO.save(user)) {
+				user.setMessage("User registered successfully");
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			}
+			user.setMessage("Please contact admin");
+			return new ResponseEntity<User>(user, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if(userDAO.save(user)) {
-			user.setMessage("User registered successfully");
-			return new ResponseEntity<User>(user, HttpStatus.OK);
-		}
-		user.setMessage("Please contact admin");
-		return new ResponseEntity<User>(user, HttpStatus.INTERNAL_SERVER_ERROR);
+		user.setMessage("User already exists with this email id");
+		return new ResponseEntity<User>(user, HttpStatus.CONFLICT);
+		
 	}
 	
 	@GetMapping("/list")
 	public ResponseEntity<List<User>> getAllUsers() {
 		List<User> users = userDAO.list();
-		if(users.size()==0) {
+		if(users.size() == 0) {
 			user.setMessage("No users registered");
 			return new ResponseEntity<List<User>>(users, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 	}
 	
-	@GetMapping("user/blocked/{email_id}")		
-	public ResponseEntity<List<User>> listBlockedUsers(@PathVariable String email_id) {
+	@GetMapping("/list/suggestedUsers")
+	public ResponseEntity<List<User>> listSuggestedUsers() {
 		
-		List<User> users = friendDAO.listBlockedUsers(email_id);
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<User> users = friendDAO.listSuggestedUsers(user.getEmail_id());
+		
+		if(users.isEmpty()) {
+			user = new User();
+			user.setMessage("No other users available to add as friend");
+			users.add(user);
+			return new ResponseEntity<List<User>>(users, HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/list/mutualFriends/{email_id}")
+	public ResponseEntity<List<User>> listMutualFriends(@PathVariable String email_id) {
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<User> users = friendDAO.listMutualFriends(user.getEmail_id(), email_id);
+		
+		if(users.isEmpty()) {
+			user = new User();
+			user.setMessage("No other users available to add as friend");
+			users.add(user);
+			return new ResponseEntity<List<User>>(users, HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
+		
+	}
+	
+	@GetMapping("/list/blocked")		
+	public ResponseEntity<List<User>> listBlockedUsers() {
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		List<User> users = friendDAO.listBlockedUsers(user.getEmail_id());
 		
 		if(users.isEmpty()) {
 			user = new User();
 			user.setMessage("You have not blocked any users");
 			users.add(user);
-			return new ResponseEntity<List<User>>(users, HttpStatus.NOT_FOUND);
+			return new ResponseEntity<List<User>>(users, HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<List<User>>(users, HttpStatus.OK);
 		
@@ -93,6 +136,19 @@ public class UserController {
 		return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
 	}
 	
+	@GetMapping("/get/image/{email_id}")
+	public @ResponseBody byte[] getImage(@PathVariable String email_id) {
+		user = userDAO.get(email_id);
+		if(user != null) {
+			byte[] image = user.getImage();
+			if(image != null) {
+				return image;
+			}
+			return null;
+		}
+		return null;
+	}
+	
 	@PostMapping("/validate")
 	public ResponseEntity<User> validateCredentials(@RequestBody User user) {
 		user = userDAO.validate(user.getEmail_id(), user.getPassword());
@@ -108,16 +164,39 @@ public class UserController {
 	
 	@PutMapping("/update")
 	public ResponseEntity<User> updateUser(@RequestBody User user) {
-		if(userDAO.get(user.getEmail_id())==null) {
-			user.setMessage("No user with this email id exists");
-			return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+		if(userDAO.get(user.getEmail_id()) != null) {
+			user.setImage(user.getImage());
+			if(userDAO.update(user)) {
+				user.setMessage("Successfully updated the user");
+				return new ResponseEntity<User>(user, HttpStatus.OK);
+			}
+			user.setMessage("Could not update the user, please try after some time");
+			return new ResponseEntity<User>(user, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		if(userDAO.update(user)) {
-			user.setMessage("Successfully updated the user");
-			return new ResponseEntity<User>(user, HttpStatus.OK);
+		user.setMessage("No user with this email id exists");
+		return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+		
+	}
+	
+	@PostMapping("/upload")
+	public ResponseEntity<User> uploadImage(@RequestParam(value="image") CommonsMultipartFile image) {
+		
+		user = (User)session.getAttribute("loggedInUser");
+		
+		if(user != null) {
+			if(image != null) {
+				user.setImage(image.getBytes());
+				if(userDAO.update(user)) {
+					user.setMessage("Image uploaded successfully");
+					return new ResponseEntity<User>(user, HttpStatus.OK);
+				}
+			}
+			user.setMessage("Image is empty");
+			return new ResponseEntity<User>(user, HttpStatus.NO_CONTENT);
 		}
-		user.setMessage("Could not update the user, please try after some time");
-		return new ResponseEntity<User>(user, HttpStatus.INTERNAL_SERVER_ERROR);
+		user.setMessage("No user with this email id exists");
+		return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+		
 	}
 	
 	@DeleteMapping("/delete/{email_id}")
@@ -148,14 +227,23 @@ public class UserController {
 		return new ResponseEntity<UserNotification>(userNotification, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@GetMapping("/notification/list/{email_id}")
-	public ResponseEntity<List<UserNotification>> listAllNotifications(@PathVariable String email_id) {
-		List<UserNotification> notifications = userDAO.listAllNotificationsFor(email_id);
-		if(notifications.size()!=0) {			
+	@GetMapping("/notification/list")
+	public ResponseEntity<List<UserNotification>> listAllNotifications() {
+		user = (User)session.getAttribute("loggedInUser");
+		if(user == null) {
+			userNotification = new UserNotification();
+			userNotification.setMessage("Please login to view Notifications");
+			List<UserNotification> notifications = new ArrayList<UserNotification>();
+			notifications.add(userNotification);
+			return new ResponseEntity<List<UserNotification>>(notifications, HttpStatus.UNAUTHORIZED);
+		}
+		List<UserNotification> notifications = userDAO.listAllNotificationsFor(user.getEmail_id());
+		if(notifications.size() != 0) {			
 			return new ResponseEntity<List<UserNotification>>(notifications, HttpStatus.OK);
 		}
 		userNotification = new UserNotification();
 		userNotification.setMessage("No notifications received");
+		notifications.add(userNotification);
 		return new ResponseEntity<List<UserNotification>>(notifications, HttpStatus.NO_CONTENT);
 	}
 	
@@ -180,15 +268,16 @@ public class UserController {
 		return new ResponseEntity<UserNotification>(userNotification, HttpStatus.NOT_FOUND);
 	}
 	
-	@GetMapping("/notification/update/setAllAsSeen/{email_id}")
-	public ResponseEntity<UserNotification> updateNotificationSetAllAsSeen(@PathVariable String email_id) {
+	@GetMapping("/notification/update/setAllAsSeen")
+	public ResponseEntity<UserNotification> updateNotificationSetAllAsSeen() {
 		userNotification = new UserNotification();
-		if(userDAO.listAllNotificationsFor(email_id).size() == 0) {
+		user = (User)session.getAttribute("loggedInUser");
+		if(userDAO.listAllNotificationsFor(user.getEmail_id()).size() == 0) {
 			userNotification.setMessage("You have no notifications");
 			return new ResponseEntity<UserNotification>(userNotification, HttpStatus.NO_CONTENT);
 		}
 		int update;
-		update = userDAO.updateSetAllAsSeen(email_id);
+		update = userDAO.updateSetAllAsSeen(user.getEmail_id());
 		if(update > 0) {
 			userNotification.setMessage("Successfully updated all notifications to seen");
 			return new ResponseEntity<UserNotification>(userNotification, HttpStatus.OK);

@@ -1,0 +1,52 @@
+<div class = "container" ng-controller = "FriendController">
+	<h1 class = "well">
+		<center>
+			<font face = "Monotype Corsiva"> Friends </font>
+		</center>
+	</h1>
+	<h3>
+		Friend Requests
+	</h3>	
+	<div ng-repeat = "request in friendRequestList">
+		<a href = "" ng-click = "$event.preventDefault();viewUser(request.email_id)">
+			{{request.email_id1}}
+		</a>
+		&nbsp; &nbsp;
+		<a href = "" ng-click = "$event.preventDefault();update(request.friend_id, 1)">
+			Accept
+		</a>
+		&nbsp;
+		<a href = "" ng-click = "$event.preventDefault();delete(request.friend_id)">
+			Decline
+		</a>
+		&nbsp;
+		<a href = "" ng-click = "$event.preventDefault();update(request.friend_id, 3)">
+			Ignore
+		</a>
+		&nbsp;
+		<a href = "" ng-click = "$event.preventDefault();update(request.friend_id, 5)">
+			Block
+		</a>
+	</div>
+	Friends
+	<ul>
+	<div ng-repeat = "friend in allFriendData">
+		<li>
+			<div ng-show = "friend.email_id1 == currentUser.email_id">
+				<a href = "" ng-click = "$event.preventDefault();viewUser(friend.email_id2)">
+					<div ng-show = "friend.email_id2 != currentUser.email_id">{{friend.email_id2}}</div>
+				</a>
+				&nbsp;
+				<a href = "" ng-click = "$event.preventDefault();deleteFriend(friend.friend_id)"> Unfriend </a>
+			</div>
+			<div ng-show = "friend.email_id2 == currentUser.email_id">
+				<a href = "" ng-click = "$event.preventDefault();viewUser(friend.email_id1)">
+					<div ng-show = "friend.email_id1 != currentUser.email_id">{{friend.email_id1}}</div>
+				</a>
+				&nbsp;
+				<a href = "" ng-click = "$event.preventDefault();deleteFriend(friend.friend_id)"> Unfriend </a>
+			</div>
+		</li>
+	</div>
+	</ul>
+</div>

@@ -1,0 +1,39 @@
+<div class = "container" ng-controller = "FriendController">
+	<h1 class = "well">
+		<center>
+			<font face = "Monotype Corsiva"> Suggested Users </font>
+		</center>
+	</h1>
+	<ul>
+	<div ng-repeat = "user in suggestedList">
+		<li>
+		<a href = "" ng-click = "$event.preventDefault();viewUser(user.email_id)">
+			Name: {{user.name}} <br>
+			EmailID: {{user.email_id}}
+		</a>
+		<li class = "dropdown" ng-show = "currentUser != undefined">
+			<a class = "dropdown-toggle" data-toggle = "dropdown" href = ""
+				ng-click="$event.preventDefault();mutualFriends(user.email_id)">
+				Mutual Friends
+				<span class = "caret"></span>
+			</a>
+			<ul class = "dropdown-menu">
+				<li ng-show="!mutualFriendList.length > 0">
+					0 Mutual Friends
+				</li>
+				<li ng-show="mutualFriendList.length > 0">
+					{{mutualFriendList.length}} Mutual Friends
+				</li>
+				<li ng-repeat="mutual in mutualFriendList">
+					{{mutual.name}} <br>
+				</li>
+			</ul>
+		</li>
+		&nbsp;
+		<button class="button1" width="50" height="50" ng-click = "$event.preventDefault();addFriend(user.email_id, 2)">
+			Send Request
+		</button>
+		</li>
+	</div>
+	</ul>
+</div>

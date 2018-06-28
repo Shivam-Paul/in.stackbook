@@ -30,17 +30,15 @@ public class Forum extends BaseDomain {
 	
 	private int forum_level;
 	
-	private int new_post_access;  //-1(Anyone)/ 1-5 as User
+	private int new_post_access;  //-1(Anyone)/ 1-5 same as User
 	
-	private int view_access;  
+	private int view_access;  //		^
 	
 	private char archived;  //Y(Yes)/N(No)
 	
-	private int score;
-	
 	private Timestamp date_created;
 	
-	private int comment_access;  
+	private int comment_access;  //		^
 	
 	private String title;
 	
@@ -115,14 +113,6 @@ public class Forum extends BaseDomain {
 
 	public void setArchived(char archived) {
 		this.archived = archived;
-	}
-
-	public int getScore() {
-		return score;
-	}
-
-	public void setScore(int score) {
-		this.score = score;
 	}
 
 	public Timestamp getDate_created() {

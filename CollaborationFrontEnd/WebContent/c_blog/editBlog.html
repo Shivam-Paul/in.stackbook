@@ -1,0 +1,33 @@
+<div class="container" ng-Controller="BlogController" ng-show="currentUser != undefined">
+	<h1 class="well">
+		<center>
+			<font face="Monotype Corsiva">Edit Blog</font>
+		</center>
+	</h1>
+	<div class="col-lg-12-well">
+		<div class="row">
+			<form>
+				<div class="col-sm-12">
+					<div class="row">
+						<div class="col-sm-6 form-group">
+							<label> Blog Title </label>
+							<input type="text" name="title" ng-model="selectedBlog.title" class="form-control"/>
+						</div>
+						<div class="col-sm-6 form-group">
+							<label> Blog Content </label>
+							 <textarea name="content" ng-model="selectedBlog.content" cols="60" rows="10"></textarea>
+						</div>
+
+					</div>
+					<div>
+						<input type="button" ng-click="update()" class="btn btn-lg btn-info"
+							name="editBlog" value="Edit Blog">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+<div ng-show="currentUser == undefined || currentUser.email_id == null">
+Please login to view this page.
+</div>

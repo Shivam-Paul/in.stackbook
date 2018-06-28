@@ -1,7 +1,6 @@
-myApp.controller("UserController", function($scope, $http, $rootScope, $location) {
+myApp.controller("UserController", function($scope, $http, $rootScope, $location, $cookieStore) {
 	
 	$rootScope.currentUser;
-	$rootScope.userImage;
 
 	$scope.user = {
 		email_id : '',
@@ -10,51 +9,108 @@ myApp.controller("UserController", function($scope, $http, $rootScope, $location
 		role : '',
 		registered_date : '',
 		active : '',
-		mobile : ''
+		mobile : '',
+		image : ''
 	}
 	
-	$scope.profilePicture = {
-			image : '',
-			email_id : ''
-	}
+	$scope.userData;
+	$scope.login;
+	
+	$rootScope.selectedUserFromBlog;
+	
+	/*$rootScope.friendData = {
+			friend_id = 0,
+			email_id1 = '',
+			email_id2 = '',
+			friends = 0
+	};*/
+	
 
 	$scope.register = function() {
 
-		alert("register");
+		console.log('Register');
 
 		$http.post('http://localhost:8081/CollaborationRestService/user/register', $scope.user)
 		.then(function(response) {
-			$scope.profilePicture.email_id = $scope.user.email_id;
-			$http.post('http://localhost:8081/CollaborationRestService/picture/save', $scope.profilePicture)
-			.then(function(response){
-				console.log('Image uploaded successfully');
-			});
-			console.log('The user registered successfully');
-			console.log(response.statusText);
+			console.log('Registered Successfully');
+			$location.path('/login');
 		});
+	}
+	
+	$scope.editProfile = function() {
+		
+		console.log('Edit profile');
+		
+		$http.put('http://localhost:8081/CollaborationRestService/user/update', $rootScope.currentUser)
+		.then(function(response) {
+			console.log('Profile updated successfully');
+		});
+		
+	}
+	
+	$scope.uploadImage = function() {
+		
+		console.log('Upload Image');
+		
+		$http.post('http://localhost:8081/CollaborationRestService/user/upload')
+		.then(function(response) {
+			$location.path('editProfile');
+		});
+		
+	}
+	
+	$scope.viewUser = function(email_id) {
+		
+		console.log('View User');
+		
+		$http.get('http://localhost:8081/CollaborationRestService/user/get/' + email_id + '.')
+		.then(function(response) {
+			$rootScope.selectedUserFromBlog = response.data;
+			
+			/*$http.get('http://localhost:8081/CollaborationRestService/friend/get/usingEmail/' +
+					$rootScope.selectedUserFromBlog.email_id + '/' + $rootScope.currentUser.email_id + '.')
+					.then(function(response) {
+						$rootScope.friendData = response.data;
+*/					
+					
+			$location.path('viewUser');
+		//	});
+		});
+		
 	}
 
 	$scope.login = function() {
 
-		alert("login");
+		console.log('login');
 
-		$http.post('http://localhost:8081/CollaborationRestService/user/validate',$scope.user)
+		$http.post('http://localhost:8081/CollaborationRestService/user/validate', $scope.user)
 		.then(function(response) {
 			
-			console.log('Email ID: '+$scope.user.email_id);
-			console.log('Password: '+$scope.user.password);
+			$rootScope.viewTrackerList = [];
+			$cookieStore.put('viewTrackerList', $rootScope.viewTrackerList);
 
-			$scope.user=response.data;
-			console.log($scope.user);
-			$rootScope.currentUser=$scope.user;
-			
-			$location.path("/home");
+			$scope.user = response.data;
+			$rootScope.currentUser = $scope.user;
+			console.log($rootScope.currentUser);
+			$cookieStore.put('userCookieData', response.data);
+			$location.path('/home');
 		});
 
 	}
 	
+	$scope.logout = function() {
+		
+		console.log('Entering the logout function');
+		delete $rootScope.currentUser;
+		//$cookieStore.remove('userCookieData');
+		delete $rootScope.viewTrackerList;
+		$location.path('/login');
+		
+	}
+		
 	
 	//User Notification 
+	
 	
 	$scope.userNotificationData;
 	
@@ -68,17 +124,35 @@ myApp.controller("UserController", function($scope, $http, $rootScope, $location
 			reference_id : ''
 	}
 	
-	/*function listAllNotifications(email_id) {
+	function listAllNotifications() {
 		
-		alert('List All Notifications');
+		console.log('List All Notifications');
 		
-		$http.get('http://localhost:8081/CollaborationRestService/user/notification/list/'+email_id)
-		.then(function(response) {
-			$scope.userNotificationData = response.data;
-		});
-		
-	}*/
+		if($rootScope.currentUser != null) {
+			$http.get('http://localhost:8081/CollaborationRestService/user/notification/list')
+			.then(function(response) {
+				$scope.userNotificationData = response.data;
+			});
+		}
+	}
 	
-	//listAllNotifications($rootScope.currentUser.email_id);
+	$scope.setAllNotificationsAsSeen = function() {
+				
+		$http.get('http://localhost:8081/CollaborationRestService/user/notification/update/setAllAsSeen')
+		.then(function(response) {
+			console.log('All Notifications set as seen');
+		});
+	}
+	
+	$scope.viewNotification = function(reference_table, reference_id) {
+		
+		console.log('View Notification');
+		
+		//TODO
+	} 
+	
+	
+	
+	listAllNotifications();
 
 });
